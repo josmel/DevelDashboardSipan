@@ -1,0 +1,134 @@
+<?php
+include_once '../../includes/register.inc.php';
+include_once '../../includes/functions.php';
+include_once '../../includes/services.php';
+include_once 'controllers/db_connect.php';
+include_once '../../layout.php';
+sec_session_start();
+if (login_check($mysqli) == true) {
+    $totEmp = new Propuesta();
+} else {
+    header('Location: /' . AMBIENTE . '/modulos/Admin/login.phtml');
+}
+?>
+<!DOCTYPE html>
+
+<html>
+    <?php echo headLayout(); ?>
+    <body class="skin-blue pace-done fixed">
+        <!-- header logo: style can be found in header.less -->
+        <?php echo headerLayout($_SESSION['username']); ?>
+        <div class="wrapper row-offcanvas row-offcanvas-left">
+            <!-- Left side column. contains the logo and sidebar -->
+            <aside class="left-side sidebar-offcanvas">
+                <!-- sidebar: style can be found in sidebar.less -->
+                <?php echo menuLayout($_SESSION['username']); ?>
+
+                <!-- Right side column. Contains the navbar and content of the page -->
+                <aside class="right-side">
+                    <!-- Content Header (Page header) -->
+                    <section class="content-header">
+                        <h1 class="text-center">
+                            Tus Propuestas Comerciales
+                        </h1>
+                    </section>
+                    <!-- Main content -->
+                    <section class="content invoice">
+                        <!-- title row -->
+
+                        <!-- info row -->
+                        <div class="box">
+                            <div class="box-body table-responsive">
+                                <table id="example1" class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Id</th>
+                                            <th>Documento</th>
+                                            <th>Razon Social</th>
+                                            <th>Correo</th>
+                                            <th>Estado</th>
+                                            <th>Fecha de Creacion</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        $ListarPropuestas = $totEmp->ObtenerPresupuestos($_SESSION['user_id']);
+                                        foreach ($ListarPropuestas as $indice => $row) {
+                                            $fechaCreacion = date_create($row['fechaCreacion']);
+                                            ?>
+                                            <tr>
+                                                <td><?php echo $row['id'] ?></td>
+                                                <td><a class="btn btn-app" title="VER PDF" href="controllers/folder/<?php echo $row['ruta'] ?>" target="_blank">Ver Documento</a></td>
+                                                <td><?php echo $row['RazonSocial'] ?></td>
+                                                <td><?php echo $row['correo'] ?></td>
+                                                <?php
+                                                switch ($row['estado']) {
+                                                    case 1:
+                                                        ?>
+                                                        <td class="rosa-<?php echo $row['id']?>"><a href="#" class="link-<?php echo $row['id']?>" onclick="cambiarEstado(<?php echo $row['id'] ?>)"><span class="label label-warning">Pendiente</span></a></td>
+                                                        <?php
+                                                        break;
+                                                    case 2:
+                                                        ?>
+                                                        <td><span class="label label-primary">Approved</span></td>
+                                                        <?php
+                                                        break;
+
+                                                    default:
+                                                        break;
+                                                }
+                                                ?>
+
+                                                <td><?php echo date_format($fechaCreacion, 'd/m/Y H:i:s') ?></td>
+                                            </tr>
+                                        <?php }
+                                        ?>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Id</th>
+                                            <th>Documento</th>
+                                            <th>Razon Social</th>
+                                            <th>Correo</th>
+                                            <th>Estado</th>
+                                            <th>Fecha de Creacion</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div> 
+                        </div>  
+                    </section><!-- /.content -->
+                </aside><!-- /.right-side -->
+        </div><!-- ./wrapper -->
+        <?php echo scripts(); ?>
+
+        <!-- AdminLTE App -->
+        <script src="../../static/css/js/AdminLTE/app.js" type="text/javascript"></script>
+        <!-- AdminLTE for demo purposes -->
+        <script src="../../static/css/js/AdminLTE/demo.js" type="text/javascript"></script>
+        <link href="../../static/css/css/datatables/dataTables.bootstrap.css" rel="stylesheet" type="text/css"/>
+        <script src="../../static/css/js/AdminLTE/demo.js" type="text/javascript"></script>
+        <script src="../../static/css/js/plugins/datatables/jquery.dataTables.js" type="text/javascript"></script>
+        <script src="../../static/css/js/plugins/datatables/dataTables.bootstrap.js" type="text/javascript"></script>
+        <script type="text/javascript">
+
+                                                            function cambiarEstado(id) {
+                                                                var id = id;
+                                                                $.post('controllers/editar-estado.php', {id: id});
+                                                                $('.link-'+id).remove();
+                                                                $('.link-'+id).append('<div class="rosa-"+id><span class="label label-primary">Approved</span><div>');
+                                                            }
+                                                            $(function () {
+                                                                $("#example1").dataTable();
+                                                                $('#example2').dataTable({
+                                                                    "bPaginate": true,
+                                                                    "bLengthChange": false,
+                                                                    "bFilter": false,
+                                                                    "bSort": true,
+                                                                    "bInfo": true,
+                                                                    "bAutoWidth": false
+                                                                });
+                                                            });
+        </script>
+    </body>
+</html>

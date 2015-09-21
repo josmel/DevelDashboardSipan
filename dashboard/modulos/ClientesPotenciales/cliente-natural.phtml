@@ -1,0 +1,135 @@
+<?php
+include_once '../../includes/register.inc.php';
+include_once '../../includes/functions.php';
+include_once '../../includes/services.php';
+include_once '../../layout.php';
+sec_session_start();
+if (login_check($mysqli) == true) {
+
+
+    $servicios = new servicios();
+} else {
+    header('Location: /'.AMBIENTE.'/modulos/Admin/login.phtml');
+}
+?>
+<!DOCTYPE html>
+<html>
+    <?php echo headLayout(); ?>
+     <body class="skin-blue pace-done fixed">
+        <!-- header logo: style can be found in header.less -->
+        <?php echo headerLayout($_SESSION['username']); ?>
+        <div class="wrapper row-offcanvas row-offcanvas-left">
+            <!-- Left side column. contains the logo and sidebar -->
+            <aside class="left-side sidebar-offcanvas">
+                <!-- sidebar: style can be found in sidebar.less -->
+                <?php echo menuLayout($_SESSION['username']); ?>
+                <!-- Right side column. Contains the navbar and content of the page -->
+                <aside class="right-side">
+                    <!-- Content Header (Page header) -->
+                    <section class="content-header">
+                        <h1 class="text-center">
+                            Clientes Potenciales-Naturales
+                        </h1>
+                    </section>
+                     <?php
+                    if (isset($_GET['me'])):
+                       $mensaje = mensajeGeneral($_GET['me'],'Cliente Potencial Natural');
+                    endif;
+                    echo $mensaje ;
+                    ?>
+                    <!-- Main content -->
+                    <section class="content invoice">
+                        <!-- title row -->
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <h2 class="page-header">
+                                    <i class="fa fa-globe"></i> Lista de Clientes Potenciales-Naturales
+                                    <div class="box-footer clearfix no-border">
+                                        <a href="../../modulos/ClientesPotenciales/cliente-natural-insertar.phtml">  <button class="btn btn-default pull-right"><i class="fa fa-plus"></i>
+                                                Agregar Cliente Potencial Natural</button></a>
+                                    </div>
+                                </h2>
+                            </div><!-- /.col -->
+                        </div>
+                        <div class="box">
+                            <div class="box-body table-responsive">
+                                <table id="example1" class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Codigo</th>
+                                            <th>Nombre Completo</th>
+                                            <th>documento</th>
+                                            <th>direccion</th>
+                                            <th>teléfonos</th>
+                                            <th>correo</th>
+                                            <th>Categoria-Estado</th>
+                                            <th>fechaRegistro</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        $documentoss = $servicios->ListarClienteNaturalPorCategoriaEstado(1, 0);
+                                        foreach ($documentoss as $indice => $registro) {
+                                            $newDate = date("Y/m/d", strtotime($registro['fechaRegistro']));
+                                            echo " <tr>";
+                                            echo "  <td><a class='btn btn-app' href='cliente-natural-editar.phtml?codigo=" . $registro['codigo'] . "' title='EDITAR'><i class='fa fa-edit'><i>" . $registro['codigo'] . "</i></i></a></td>";
+                                            echo "  <td>" . $registro['apellidoPaterno'] . " " . $registro['apellidoMaterno'] . ", " . $registro['nombreCompleto'] . " </td>";
+                                            echo "  <td>" . $registro['documentoIdentidad'] . "</td>";
+                                            echo "  <td>" . $registro['direccionCliente'] . "</td>";
+                                            echo "  <td>Fijo [" . $registro['telefonoFijoContacto'] . "] - Movil [" . $registro['telefonoCelularContacto'] . "]</td>";
+                                            echo "  <td>" . $registro['correoTrabajoContacto'] . "</td>";
+                                            echo "  <td>" . $registro['descripcionCategoriaCliente'] . " - " . $registro['descripcionEstado'] . "</td>";
+                                            echo "  <td>" . $newDate . "</td>";
+                                            echo " </tr>";
+                                        }
+                                        ?>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Codigo</th>
+                                            <th>Nombre Completo</th>
+                                            <th>documento</th>
+                                            <th>direccion</th>
+                                            <th>teléfonos</th>
+                                            <th>correo</th>
+                                            <th>Categoria-Estado</th>
+                                            <th>fechaRegistro</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div> 
+                        </div>  
+                        <div class="row no-print">
+                            <div class="col-xs-12">
+                                <button class="btn btn-default" onclick="window.print();"><i class="fa fa-print"></i> Imprimir</button>
+                                <button class="btn btn-primary pull-right" style="margin-right: 5px;"><i class="fa fa-download"></i> Generar PDF</button>
+                            </div>
+                        </div>
+                    </section><!-- /.content -->
+                </aside><!-- /.right-side -->
+        </div><!-- ./wrapper -->
+       <?php echo scripts(); ?>
+        <!-- AdminLTE App -->
+        <script src="../../static/css/js/AdminLTE/app.js" type="text/javascript"></script>
+        <!-- AdminLTE for demo purposes -->
+        <link href="../../static/css/css/datatables/dataTables.bootstrap.css" rel="stylesheet" type="text/css"/>
+        <link href="../../static/css/css/datatables/dataTables.tableTools.css" rel="stylesheet" type="text/css"/>
+        <script src="../../static/css/js/AdminLTE/demo.js" type="text/javascript"></script>
+        <script src="../../static/css/js/plugins/datatables/jquery.dataTables.js" type="text/javascript"></script>
+        <script src="../../static/css/js/plugins/datatables/dataTables.bootstrap.js" type="text/javascript"></script>
+        <script src="../../static/css/js/plugins/datatables/dataTables.tableTools.js" type="text/javascript"></script>
+        <script type="text/javascript">
+                                    $(function () {
+                                        $("#example1").dataTable();
+                                        $('#example2').dataTable({
+                                            "bPaginate": true,
+                                            "bLengthChange": false,
+                                            "bFilter": false,
+                                            "bSort": true,
+                                            "bInfo": true,
+                                            "bAutoWidth": false
+                                        });
+                                    });
+        </script>
+    </body>
+</html>

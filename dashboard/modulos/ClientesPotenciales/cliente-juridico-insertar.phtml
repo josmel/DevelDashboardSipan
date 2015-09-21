@@ -1,0 +1,202 @@
+<?php
+include_once '../../includes/register.inc.php';
+include_once '../../includes/functions.php';
+include_once '../../includes/services.php';
+include_once '../../layout.php';
+sec_session_start();
+if (login_check($mysqli) == true) {
+    $servicios = new servicios();
+} else {
+   header('Location: /'.AMBIENTE.'/modulos/Admin/login.phtml');
+}
+?>
+<!DOCTYPE html>
+<html>
+    <?php echo headLayout(); ?>
+ <body class="skin-blue pace-done fixed">
+
+        <!-- header logo: style can be found in header.less -->
+        <?php echo headerLayout($_SESSION['username']); ?>
+        <div class="wrapper row-offcanvas row-offcanvas-left">
+            <!-- Left side column. contains the logo and sidebar -->
+            <aside class="left-side sidebar-offcanvas">
+                <!-- sidebar: style can be found in sidebar.less -->
+                <?php echo menuLayout($_SESSION['username']); ?>
+                <!-- /.sidebar -->
+            </aside>
+
+            <!-- Right side column. Contains the navbar and content of the page -->
+            <aside class="right-side">
+
+                <section class="content-header">
+                    <h1 class="text-center">
+                        Cliente Juridico
+                        <small>agregar</small>
+                    </h1>
+                   
+                </section>
+
+
+
+
+                <!-- Main content -->
+                <section class="content">
+                    <div class="row">
+                        <form action="controllers/register.cliente.juridico.php" 
+                              method="post" 
+                              name="registration_form" role="form">
+                            <!-- left column -->
+                            <div class="col-md-6">
+                                <!-- general form elements -->
+                                <div class="box box-primary">
+                                   
+                                    <!-- form start -->
+
+                                    <div class="box-body">
+                                        <div class="form-group">
+                                            <input name="codigo" type='hidden' value='0'>
+                                            <label for="exampleInputEmail1">razon Social</label>
+                                            <input type="text" class="form-control"  name="razonSocial" id='username'  placeholder="razon Social">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">numero RUC</label>
+                                            <input type="text"  name="numeroRUC"   class="form-control" id="exampleInputEmail1" placeholder="numeroRUC">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputPassword1">nombre Contacto</label>
+                                            <input type="text" class="form-control" id="password" name="nombreContacto"  placeholder="nombre Contacto">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputPassword1">direccion de Cliente</label>
+                                            <input type="text" id="confirmpwd" name="direccionCliente"  class="form-control"  placeholder="direccion de Cliente">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="exampleInputPassword1">direccion de Referencia</label>
+                                            <input type="text" id="confirmpwd" name="direccionReferencia"  class="form-control"  placeholder="direccion de Referencia">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputPassword1">direccion de Posible Instalacion</label>
+                                            <input type="text" id="confirmpwd" name="direccionPosibleInstalacion"  class="form-control"  placeholder="direccion de PosibleInstalacion">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputPassword1">direccion de Referencia Posible Instalacion"</label>
+                                            <input type="text" id="confirmpwd" name="direccionReferenciaPosibleInstalacion"  class="form-control"  placeholder="direccion de Referencia Posible Instalacion"">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputPassword1">telefono de CelularContacto</label>
+                                            <input type="text" id="confirmpwd" name="telefonoCelularContacto"  class="form-control"  placeholder="telefono de CelularContacto">
+                                        </div>
+                                    </div><!-- /.box-body -->
+
+                                </div><!-- /.box -->
+                            </div><!--/.col (left) -->
+
+
+
+
+                            <!-- left column -->
+                            <div class="col-md-6">
+                                <!-- general form elements -->
+                                <div class="box box-primary">
+
+                                    <div class="box-body">
+
+
+                                        <div class="form-group">
+                                            <label for="exampleInputPassword1">telefono de Fijo Contacto</label>
+                                            <input type="text" id="confirmpwd" name="telefonoFijoContacto"  class="form-control"  placeholder="telefono de FijoContacto">
+                                        </div>
+
+
+                                        <div class="form-group">
+                                            <label for="exampleInputPassword1">correode Trabajo Contacto</label>
+                                            <input type="text" id="confirmpwd" name="correoTrabajoContacto"  class="form-control"  placeholder="correo de Trabajo Contacto">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputPassword1">correo Personal de Contacto</label>
+                                            <input type="text" id="confirmpwd" name="correoPersonalContacto"  class="form-control"  placeholder="correo Personal de Contacto">
+                                        </div>
+                                        
+                                       
+                                        <div class="form-group">
+                                            <label for="exampleInputPassword1">observaciones</label>
+                                            <textarea type="text" id="confirmpwd" name="observaciones"  class="form-control"  placeholder="observaciones"></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label> Estado de Cliente</label>
+                                            <select name="estadoClienteCodigo" class="form-control">
+                                                <option value='0'>Selecciona Opci&oacute;n...</option> 
+                                                <?php
+                                                $estadoClienteCodigo = $servicios->estadoClienteCodigo();
+                                                foreach ($estadoClienteCodigo as $indice => $registro) {
+                                                    $dato = $servicios->buscarArray($registro["T_CategoriaCliente_codigo"], 'ListarCategoriasCliente');
+                                                    echo "<option value='" . $registro['codigo'] . "'>" . $dato.' - '.$registro['descripcion'] . "</option>";
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label> Departamento</label>
+                                            <select id="departamento" onChange='cargaContenido(this.id)' name="departamento" class="form-control">
+                                                <option value='0'>Selecciona Opci&oacute;n...</option> 
+                                                <?php
+                                                $departamento = $servicios->ListarDepartamentos(0);
+                                                foreach ($departamento as $indice => $registro) {
+                                                    echo "<option value='" . $registro['departamento'] . "'>" . $registro['descripcion'] . "</option>";
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                        <div class="form-group" id="demoDer">
+                                            <label> Provincia</label>
+                                            <select disabled="disabled" name="provincia" id="provincia" class="form-control">
+                                                <option value="0">Selecciona opci&oacute;n...</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group" id="demoProv">
+                                            <label> Distrito</label>
+                                            <select disabled="disabled" name="distrito" id="distrito" class="form-control">
+                                                <option value="0">Selecciona opci&oacute;n...</option>
+                                            </select>
+                                        </div>
+
+                                    </div><!-- /.box-body -->
+
+                                    <div class="box-footer">
+                                        <button value="Register" onclick="return regformhash(this.form,
+                                                        this.form.nombreCompleto,
+                                                        this.form.apellidoPaterno,
+                                                        this.form.apellidoMaterno,
+                                                        this.form.confirmpwd);" type="submit" class="btn btn-primary">Guardar</button>
+                                                <a href="../../modulos/ClientesPotenciales/cliente-juridico.phtml"  class="btn btn-primary"><font color=white>Cancelar</font></a>
+                                    </div>
+                                    </form>
+                                </div><!-- /.box -->
+
+                            </div><!--/.col (left) -->
+                    </div>   <!-- /.row -->
+                </section><!-- /.content -->  
+            </aside> 
+        </div> 
+           <?php echo scripts(); ?>
+        <script src="../../static/css/js/plugins/input-mask/jquery.inputmask.js" type="text/javascript"></script>
+        <script src="../../static/css/js/plugins/input-mask/jquery.inputmask.date.extensions.js" type="text/javascript"></script>
+        <script src="../../static/css/js/plugins/input-mask/jquery.inputmask.extensions.js" type="text/javascript"></script>
+
+        <script src="../../static/css/js/plugins/daterangepicker/daterangepicker.js" type="text/javascript"></script>
+
+        <script src="../../static/css/js/plugins/colorpicker/bootstrap-colorpicker.min.js" type="text/javascript"></script>
+
+        <script src="../../static/css/js/plugins/timepicker/bootstrap-timepicker.min.js" type="text/javascript"></script>
+
+        <script src="../../static/css/js/AdminLTE/app.js" type="text/javascript"></script>
+
+        <script src="../../static/css/js/AdminLTE/demo.js" type="text/javascript"></script>
+        <script src="../../static/css/js/select_dependiente.js" type="text/javascript"></script>
+    </body>
+
+
+
+</html>

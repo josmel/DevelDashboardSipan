@@ -1,0 +1,295 @@
+<?php
+include_once '../../includes/register.inc.php';
+include_once '../../includes/functions.php';
+include_once '../../includes/services.php';
+include_once '../../layout.php';
+sec_session_start();
+if (login_check($mysqli) == true) {
+    if (isset($_GET['q']) and ! empty($_GET['q'])) {
+        $servicios = new servicios();
+        $ContratoNatural = $servicios->BuscarContratoNaturales($_GET['q']);
+        if ($ContratoNatural) {
+            $Recaudaciones = $servicios->ListarRecaudacionesPorCodigoContrato($_GET['q']);
+//            var_dump($Recaudaciones);exit;
+        }
+//        var_dump($ContratoNatural);
+//        Exit;
+    }
+} else {
+    header('Location: /' . AMBIENTE . '/modulos/Admin/login.phtml');
+}
+?>
+<!DOCTYPE html>
+<html>
+    <?php echo headLayout(); ?>
+    <body class="skin-blue pace-done fixed">
+        <!-- header logo: style can be found in header.less -->
+        <?php echo headerLayout($_SESSION['username']); ?>
+        <div class="wrapper row-offcanvas row-offcanvas-left">
+            <!-- Left side column. contains the logo and sidebar -->
+            <aside class="left-side sidebar-offcanvas">
+                <!-- sidebar: style can be found in sidebar.less -->
+                <?php echo menuLayout($_SESSION['username']); ?>
+                <!-- Right side column. Contains the navbar and content of the page -->
+                <aside class="right-side">
+                    <!-- Content Header (Page header) -->
+                    <section class="content-header">
+                        <h1 class="text-center">
+                            Recaudaciones
+                        </h1>
+                        <?php
+                    if (isset($_GET['me'])):
+                        $mensaje = mensajeGeneral($_GET['me'], 'Recaudacion');
+                    endif;
+                    echo $mensaje;
+                    ?>
+                    </section>
+                    <!-- Main content -->
+                    <section class="content invoice">
+                        <!-- title row -->
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <h2 class="page-header">
+                                    Recaudaciones Boletas
+                                </h2>
+                                <?php if (isset($_GET['q']) && !$ContratoNatural) { ?>
+                                    <div class="alert alert-warning alert-dismissable">
+                                        <i class="fa fa-warning"></i>
+                                        <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+                                        <b>Alert!</b>
+                                        No existe Contrato asociado al valor ingresado.
+                                    </div>
+                                <?php }
+                                ?>
+                            </div><!-- /.col -->
+
+<!-- Modal -->
+                            <div class="modal fade" id="myModalTwo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title" id="myModalLabel">Registrar de Recaudación</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Modal -->
+                            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title" id="myModalLabel">Detalle de Recaudación</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!-- info row -->
+                        <div class="box">
+                            <div class="row">
+                                <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                                    <form class="sidebar-form" method="get" action="">
+                                        <div class="input-group">
+                                            <input class="form-control" required="" type="text" value="<?php
+                                            if (isset($_GET['q'])) {
+                                                echo $_GET['q'];
+                                            }
+                                            ?>" placeholder="Ingrese Número de Contrato..." name="q">
+                                            <span class="input-group-btn">
+                                                <button id="search-btn" class="btn btn-flat"  type="submit">
+                                                    <i class="fa fa-search"></i>
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </form>
+                                </div><!-- /.col -->
+                            </div>
+                            <?php if ($ContratoNatural) { ?>
+                                <!--                            <div class="box-body">
+                                                                    <div class="row">
+                                                            <div class="col-md-12">
+                                                            <div class="col-sm-6 invoice-col">
+                                                                <address>
+                                                                    <strong>Nombre:</strong> <?php echo $ContratoNatural['nombreCompleto'] ?><br>
+                                                                    <strong>Apellidos:</strong> <?php echo $ContratoNatural['apellidoPaterno'] . ' ' . $ContratoNatural['apellidoMaterno'] ?><br>
+                                
+                                                                </address>
+                                                            </div> 
+                                                            <div class="col-sm-6 invoice-col">
+                                                                <address>
+                                                                  <strong>tipo Documento:</strong> <?php echo $ContratoNatural['descripcionTipoDocumento'] ?><br>
+                                                                    <strong>Documento:</strong> <?php echo $ContratoNatural['documentoIdentidad'] ?><br>
+                                                                   </address>
+                                                            </div>
+                                                            <br>
+                                                        </div>/.col (left) 
+                                                        </div></div>-->
+
+                                <div class="box-body">
+                                    <div class="row">
+                                        <label class="col-xs-1 control-label">Cliente</label>
+                                        <div class="col-xs-6">
+                                            <input type="text" value="<?php echo $ContratoNatural["apellidoPaterno"] . ' ' . $ContratoNatural["apellidoMaterno"] . ', ' . $ContratoNatural["nombreCompleto"] ?>" class="form-control" placeholder="Cliente" disabled>
+                                        </div>
+                                        <label class="col-xs-3 control-label">Documento Identidad</label>
+                                        <div class="col-xs-2">
+                                            <input type="text"  value="<?php echo $ContratoNatural["documentoIdentidad"] ?>" class="form-control" placeholder="Numero de DNI" disabled>
+                                        </div>
+
+                                    </div>
+                                </div> 
+                            <?php } ?>
+                        </div>
+
+                        <div class="box">
+                            <?php if (isset($_GET['q']) && $ContratoNatural) { ?>
+                              
+                            <div class="box-footer clearfix no-border">
+                                
+<button type="button" class="btns  btn-default pull-right" data-toggle="modal" data-target="#myModalTwo" href="#" ids="<?php echo $_GET['q']?>"><i class="fa fa-plus"></i> Agregar Recaudación</button>                                
+                                
+                        
+                                </div>
+                            <?php } ?>
+
+                            <div class="box-body table-responsive">
+                                <table id="example1" class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Codigo</th>
+                                            <th>NumeroSerie</th>
+                                            <th>NumeroBoleta</th>
+                                            <th>mesBoleta</th>
+                                            <th>fechaEmision</th>
+                                            <th>fechaRecaudacion</th>
+                                            <th>nombreBanco</th>
+                                            <th>subtotal</th>
+                                            <th>igv</th>
+                                            <th>Editar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        foreach ($Recaudaciones as $indice => $registro) {
+                                            $fechaEmision = date_create($registro['fechaEmision']);
+                                            $fechaRecaudacion = date_create($registro['fechaRecaudacion']);  
+                                                echo " <tr>";
+                                                echo "  <td><i><i>" . $registro['codigoRecaudacion'] . "</i></i></td>";
+                                                echo "  <td>" . $registro['T_FacturacionBoleta_numeroSerie'] . "</td>";
+                                                echo "  <td>" . $registro['T_FacturacionBoleta_numeroBoleta'] . " </td>";
+                                                echo "  <td>" . $registro['mesBoleta'] . " </td>";
+                                                echo "  <td>" . date_format($fechaEmision, 'd/m/Y') . " </td>";
+                                                echo "  <td>" . date_format($fechaRecaudacion, 'd/m/Y') . "</td>";
+                                                echo "  <td>" . $registro['nombreBanco'] . " </td>";
+                                                echo "  <td>" . $registro['subtotal'] . "</td>";
+                                                echo "  <td>" . $registro['igv'] . "</td>";
+                                                echo '<td> <button type="button" class="btn  btn-default btn-flat" data-toggle="modal" data-target="#myModal" href="#" id="' . $registro['codigoRecaudacion'] . '">Editar</button></td>';
+                                                echo " </tr>";
+                                        }
+                                        ?>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Codigo</th>
+                                            <th>NumeroSerie</th>
+                                            <th>NumeroBoleta</th>
+                                            <th>mesBoleta</th>
+                                            <th>fechaEmision</th>
+                                            <th>fechaRecaudacion</th>
+                                            <th>nombreBanco</th>
+                                            <th>subtotal</th>
+                                            <th>igv</th>
+                                            <th>Editar</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>  
+
+                    </section><!-- /.content -->
+                </aside><!-- /.right-side -->
+        </div><!-- ./wrapper -->
+
+
+        <?php echo scripts(); ?>
+        <script src="../../static/css/js/AdminLTE/app.js" type="text/javascript"></script>
+        <!-- AdminLTE for demo purposes -->
+        <script src="../../static/css/js/AdminLTE/demo.js" type="text/javascript"></script>
+        <link href="../../static/css/css/datatables/dataTables.bootstrap.css" rel="stylesheet" type="text/css"/>
+        <script src="../../static/css/js/AdminLTE/demo.js" type="text/javascript"></script>
+        <script src="../../static/css/js/plugins/datatables/jquery.dataTables.js" type="text/javascript"></script>
+        <script src="../../static/css/js/plugins/datatables/dataTables.bootstrap.js" type="text/javascript"></script>
+        <script type="text/javascript">
+            $(function () {
+                $("#example1").dataTable();
+                $('#example2').dataTable({
+                    "bPaginate": true,
+                    "bLengthChange": false,
+                    "bFilter": false,
+                    "bSort": true,
+                    "bInfo": true,
+                    "bAutoWidth": false
+                });
+            });
+        </script>
+        
+        
+        <script type="text/javascript">
+            $(function () {
+//                $('.btn').click(function () {
+                $(document).on('click', '.btn', function (e) {
+                    var essay_id = $(this).attr('id');
+                    $.ajax({
+                        type: 'get',
+                        url: '/<?php echo AMBIENTE ?>/modulos/Recaudaciones/controllers/detalle-recaudacion.phtml', // in here you should put your query 
+                        data: 'codigo=' + essay_id, // here you pass your id via ajax .
+                        // in php you should use $_POST['post_id'] to get this value 
+                        success: function (r)
+                        {
+                            // now you can show output in your modal 
+                            $('#mymodal').show();  // put your modal id 
+                            $('.modal-body').show().html(r);
+                        }
+                    });
+                });
+                $('#modal').on('hidden.bs.modal', function () {
+                    $(this).removeData('bs.modal');
+                });
+            });
+       
+        
+        $(function () {
+//                $('.btn').click(function () {
+                $(document).on('click', '.btns', function (e) {
+                    var essay_id = $(this).attr('ids');
+                    $.ajax({
+                        type: 'get',
+                        url: '/<?php echo AMBIENTE ?>/modulos/Recaudaciones/controllers/detalle-recaudacion-registrar.phtml', // in here you should put your query 
+                        data: 'codigo=' + essay_id, // here you pass your id via ajax .
+                        // in php you should use $_POST['post_id'] to get this value 
+                        success: function (r)
+                        {
+                            // now you can show output in your modal 
+                            $('#mymodalTwo').show();  // put your modal id 
+                            $('.modal-body').show().html(r);
+                        }
+                    });
+                });
+                $('#modal').on('hidden.bs.modal', function () {
+                    $(this).removeData('bs.modal');
+                });
+            });
+        </script>
+    </body>
+</html>

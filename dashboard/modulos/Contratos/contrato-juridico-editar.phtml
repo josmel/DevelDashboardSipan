@@ -1,0 +1,340 @@
+<?php
+include_once '../../includes/register.inc.php';
+include_once '../../includes/functions.php';
+include_once '../../includes/services.php';
+include_once '../../layout.php';
+sec_session_start();
+if (login_check($mysqli) == true) {
+    if (isset($_GET['codigo']) and ! empty($_GET['codigo'])) {
+        $servicios = new servicios();
+        $ContratoNatural = $servicios->BuscarContratoJuridicos($_GET['codigo']);
+    } else {
+        header('Location: /' . AMBIENTE . '/');
+    }
+} else {
+    header('Location: /' . AMBIENTE . '/modulos/Admin/login.phtml');
+}
+?>
+<!DOCTYPE html>
+<html>
+    <?php echo headLayout(); ?>
+    <body class="skin-blue pace-done fixed">
+        <!-- header logo: style can be found in header.less -->
+        <?php echo headerLayout($_SESSION['username']); ?>
+        <div class="wrapper row-offcanvas row-offcanvas-left">
+            <!-- Left side column. contains the logo and sidebar -->
+            <aside class="left-side sidebar-offcanvas">
+                <!-- sidebar: style can be found in sidebar.less -->
+                <?php echo menuLayout($_SESSION['username']); ?>
+                <!-- /.sidebar -->
+            </aside>
+            <!-- Right side column. Contains the navbar and content of the page -->
+            <aside class="right-side">
+                <section class="content-header">
+                    <h1 class="text-center">
+                        Contrato Jurídico
+                        <small>editar</small>
+                    </h1>
+                    <?php
+                    if (isset($_GET['me'])):
+                        $mensaje = mensajeGeneral($_GET['me'], 'Contrato');
+                    endif;
+                    echo $mensaje;
+                    ?>
+                </section>
+                <!-- Main content -->
+                <section class="content">
+                    <div class="row">
+
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <h2 class="page-header">
+                                        &nbsp;&nbsp;&nbsp; Datos de Cliente
+                                    </h2>
+                                </div> 
+                            </div>
+                            <div class="col-sm-6 invoice-col">
+                                <address>
+                                    <strong> Razón Social:</strong> <?php echo $ContratoNatural['razonSocial'] ?><br>
+                                    <strong> Número RUC:</strong> <?php echo $ContratoNatural['numeroRUC'] ?><br>
+                                    <strong>Nombre de Contacto:</strong> <?php echo $ContratoNatural['nombreContacto'] ?><br>
+                                    <strong> Celular:</strong> <?php echo $ContratoNatural['telefonoCelularContacto'] ?><br/>
+                                    <strong>Telefono: </strong><?php echo $ContratoNatural['telefonoFijoContacto'] ?><br/>
+                                </address>
+                            </div> 
+                            <div class="col-sm-6 invoice-col">
+                                <address>
+                                    <strong>Correo de Trabajo: </strong><?php echo $ContratoNatural['correoTrabajoContacto'] ?><br>
+                                    <strong> Correo personal:</strong> <?php echo $ContratoNatural['correoPersonalContacto'] ?><br>
+                                    <strong> Estado Cliente:</strong> <?php echo $ContratoNatural['descripcionEstadoCliente'] ?><br>
+                                    <strong> Dirección del Cliente:</strong> <?php echo $ContratoNatural['direccionCliente'] ?><br/>
+                                </address>
+                            </div>
+                            <br>
+                        </div><!--/.col (left) -->       </div><!--/.col (left) -->
+
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                    <li class="active"><a href="#tab_1" data-toggle="tab">Detalle de Contrato</a></li>
+                                    <li><a href="#tab_2" data-toggle="tab">Detalle de Plan</a></li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="tab_1">
+                                        <form action="controllers/register.contrato.juridico.php" 
+                                              method="post" 
+                                              name="registration_form" role="form">
+                                            <div class="box-body">
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">Numero de Contrato</label>
+                                                    <input name="urlNavegacion" type='hidden' value='<?php $urlNavegacion = $_SERVER['REQUEST_URI'];
+                    echo $urlNavegacion
+                    ?>'>
+                                                    <input name="codigoContrato" type='hidden' value='<?php echo $_GET['codigo'] ?>'>
+                                                    <input name="T_Cliente_codigo" type='hidden' value='<?php echo $ContratoNatural['T_Cliente_codigo'] ?>'>
+                                                    <input name="T_Predio_codigo" type='hidden' value='<?php echo $ContratoNatural['T_Predio_codigo'] ?>'>
+                                                    <!--disabled=""--> <input  type="text"  class="form-control" value='<?php echo $ContratoNatural['numeroContrato'] ?>' name="numeroContrato" id='username'  placeholder="Numero de Contrato">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">Ubicacion de Contrato Fisico</label>
+                                                    <input type="text"  name="ubicacionContratoFisico" value='<?php echo $ContratoNatural['ubicacionContratoFisico'] ?>'   class="form-control" id="exampleInputEmail1" placeholder="Ubicacion de Contrato Fisico">
+                                                </div>
+                                                <!-- Date dd/mm/yyyy -->
+                                                <div class="form-group">
+                                                    <label>Fecha Inicio de Contrato:</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon">
+                                                            <i class="fa fa-calendar"></i>
+                                                        </div>
+                                                        <input type="text" name="fechaInicioContrato" value='<?php
+                                                        $fechaInicio = date_create($ContratoNatural['fechaInicioContrato']);
+                                                        echo date_format($fechaInicio, 'd/m/Y')
+                                                        ?>' class="form-control" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask/>
+                                                    </div><!-- /.input group -->
+                                                </div><!-- /.form group -->
+
+                                                <!-- Date dd/mm/yyyy -->
+                                                <div class="form-group">
+                                                    <label>Fecha Final de Contrato:</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon">
+                                                            <i class="fa fa-calendar"></i>
+                                                        </div>
+                                                        <input type="text" name="fechaFinContrato" value='<?php
+                                                        if (empty($ContratoNatural['fechaFinContrato'])):
+                                                            $fechaFin = '';
+                                                        else :
+                                                            $fechaFin = date_create($ContratoNatural['fechaFinContrato']);
+                                                        endif;
+                                                        echo date_format($fechaFin, 'd/m/Y')
+                                                        ?>' class="form-control" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask/>
+                                                    </div><!-- /.input group -->
+                                                </div><!-- /.form group -->
+                                                <div class="form-group">
+                                                    <label for="exampleInputPassword1">Direccion Exacta del Predio</label>
+                                                    <input type="text" id="confirmpwd" name="direccionExactaPredio" value='<?php echo $ContratoNatural['direccionExactaPredio'] ?>'  class="form-control"  placeholder="Direccion Exacta del Predio">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label> Estado del Contrato</label>
+                                                    <select name="estadoContratoCodigo" class="form-control">
+                                                        <option value='0'>Selecciona Opci&oacute;n...</option> 
+                                                        <?php
+                                                        $estadoContrato = $servicios->ListarEstadosContrato();
+                                                        foreach ($estadoContrato as $indice => $registro) {
+                                                            if ($ContratoNatural['T_EstadoContrato_codigo'] == 6) {
+                                                                if ($registro['codigo'] != 1 && $registro['codigo'] != 12) {
+                                                                    if ($registro['codigo'] == $ContratoNatural['T_EstadoContrato_codigo']) {
+                                                                        echo "<option selected='" . $registro['codigo'] . "' value='" . $registro['codigo'] . "'>" . $registro['descripcion'] . "</option>";
+                                                                    } else {
+                                                                        echo "<option value='" . $registro['codigo'] . "'>" . $registro['descripcion'] . "</option>";
+                                                                    }
+                                                                }
+                                                            } else {
+                                                                if ($ContratoNatural['T_EstadoContrato_codigo'] != 9) {
+                                                                    if ($registro['codigo'] != 9 && $registro['codigo'] != 6 && $registro['codigo'] != 12) {
+                                                                        if ($registro['codigo'] == $ContratoNatural['T_EstadoContrato_codigo']) {
+                                                                            echo "<option selected='" . $registro['codigo'] . "' value='" . $registro['codigo'] . "'>" . $registro['descripcion'] . "</option>";
+                                                                        } else {
+                                                                            echo "<option value='" . $registro['codigo'] . "'>" . $registro['descripcion'] . "</option>";
+                                                                        }
+                                                                    }
+                                                                } else {
+                                                                    if ($registro['codigo'] != 6 && $registro['codigo'] != 12) {
+                                                                        if ($registro['codigo'] == $ContratoNatural['T_EstadoContrato_codigo']) {
+                                                                            echo "<option selected='" . $registro['codigo'] . "' value='" . $registro['codigo'] . "'>" . $registro['descripcion'] . "</option>";
+                                                                        } else {
+                                                                            echo "<option value='" . $registro['codigo'] . "'>" . $registro['descripcion'] . "</option>";
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                        ?>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="exampleInputPassword1">Obsevaciones</label>
+                                                    <textarea class="form-control" name="observaciones"  rows="3" placeholder="observaciones"><?php echo $ContratoNatural['observaciones'] ?></textarea>
+                                                </div>
+                                            </div><!-- /.box-body -->
+                                            <div class="box-footer">
+                                                <button value="Register" type="submit" class="btn btn-primary">Guardar</button>
+                                                <a href="../../modulos/Contratos/contratos-juridico.phtml"  class="btn btn-primary"><font color=white>Cancelar</font></a>
+                                            </div>
+                                        </form>
+                                    </div> 
+                                    <div class="tab-pane" id="tab_2">
+
+                                        <form action="controllers/register.detalle.contrato.php" 
+                                              method="post" 
+                                              name="registration_form" role="form">
+                                            <div class="box-body">
+                                                <div class="box-header">
+                                                    <h3 class="box-title">Planes Servicio</h3>
+                                                </div><!-- /.box-header -->
+                                                <input name="urlNavegacion" type='hidden' value='<?php $urlNavegacion = $_SERVER['REQUEST_URI'];
+                                                        echo $urlNavegacion
+                                                        ?>'>
+                                                <input name="codigoContrato" type='hidden' value='<?php echo $_GET['codigo'] ?>'>
+                                                <div class="form-group">  
+                                                    <div class="panel-group" id="accordion">
+                                                        <?php
+                                                        $PlanesServicio = $servicios->ListarPlanesServiciosPorPlan();
+                                                        $detalleContrato = $servicios->ListarDetalleContrato($_GET['codigo']);
+                                                        foreach ($detalleContrato as $indice => $registro) {
+                                                            $valor = $servicios->convert_number_to_words($registro['codigo']);
+                                                            echo ' <div class="panel panel-info">
+                                                    <div class="panel-heading">
+                                                        <h4 class="panel-title">
+                                                            <a data-toggle="collapse" data-parent="#accordion"
+                                                               href="#accordion' . $valor . '">';
+                                                            $data = $servicios->filter_by_value($detalleContrato, 'T_PlanServicio_codigo', $registro['codigo']);
+                                                            if ($data) {
+                                                                $fecha = date_create($data[0]['fechaEntrega']);
+                                                                $fechaEntrega = date_format($fecha, 'd/m/Y');
+
+                                                                echo ' <input name="planServicio[]"  value="' . $registro['codigo'] . '"  type="checkbox" checked  />';
+                                                            } else {
+                                                                echo ' <input name="planServicio[]" value="' . $registro['codigo'] . '"  type="checkbox"  />';
+                                                                $fechaEntrega = '';
+                                                            }
+                                                            echo '&nbsp;&nbsp;&nbsp;&nbsp;<span class="text">' . $registro['nombrePlan'] . ' - ' . $registro['nombreServicio'] . '</span>';
+                                                            echo '  </a>
+                                                        </h4>
+                                                    </div>';
+                                                            echo ' <div id="accordion' . $valor . '" class="panel-collapse collapse">';
+                                                            echo '     <div class="panel-body">';
+                                                            echo ' <div class="form-group">
+                                                                <label for="exampleInputEmail1">Costo de Instalacion </label>
+                                                                <input type="text"  name="cargoInstalacion[' . $registro['codigo'] . ']" value="' . $data[0]['cargoInstalacion'] . '"   class="form-control" id="exampleInputEmail1" placeholder="Cargo de Instalacion">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="exampleInputEmail1">Ont Asignado</label>
+                                                                <input type="text"  name="ontAsignado[' . $registro['codigo'] . ']" value="' . $data[0]['ontAsignado'] . '"   class="form-control" id="exampleInputEmail1" placeholder="Ont Asignado">
+                                                            </div>
+                                                             <div class="form-group">
+                                                                <label for="exampleInputEmail1">Teléfono Voy Asignado</label>
+                                                                <input type="text"  name="telefonoVoyAsignado[' . $registro['codigo'] . ']" value="' . $data[0]['telefonoVoyAsignado'] . '"   class="form-control" id="exampleInputEmail1" placeholder="Teléfono Voy Asignado">
+                                                            </div>
+                                                            <!-- Date dd/mm/yyyy -->
+                                                            <div class="form-group">
+                                                                <label>Fecha de Entrega:</label>
+                                                                <div class="input-group">
+                                                                    <div class="input-group-addon">
+                                                                        <i class="fa fa-calendar"></i>
+                                                                    </div>
+                                                                    <input type="text" name="fechaEntrega[' . $registro['codigo'] . ']" value="' . $fechaEntrega . '" class="form-control" data-inputmask="' . "'" . 'alias' . "'" . ': ' . "'" . 'dd/mm/yyyy' . "'" . '" data-mask/>
+                                                                </div>
+                                                            </div>';
+                                                            echo ' </div>
+                                                    </div>
+                                                </div>';
+                                                        }
+                                                        ?>
+                                                    </div>
+                                                </div>   
+                                                
+                                            </div><!-- /.box-body -->
+                                            <div class="box-footer">
+                                                <button value="Register"  type="submit" class="btn btn-primary">Guardar</button>
+                                                <a href="../../modulos/Contratos/contratos.phtml"  class="btn btn-primary"><font color=white>Cancelar</font></a>
+                                            </div>
+                                        </form>
+                                    </div> 
+                                </div>   <!-- /.row -->
+                                </section><!-- /.content -->  
+                                </aside> 
+                            </div> 
+<?php echo scripts(); ?>
+                            <script src="../../static/css/js/plugins/input-mask/jquery.inputmask.js" type="text/javascript"></script>
+                            <script src="../../static/css/js/plugins/input-mask/jquery.inputmask.date.extensions.js" type="text/javascript"></script>
+                            <script src="../../static/css/js/plugins/input-mask/jquery.inputmask.extensions.js" type="text/javascript"></script>
+                            <script src="../../static/css/js/plugins/daterangepicker/daterangepicker.js" type="text/javascript"></script>
+                            <script src="../../static/css/js/plugins/colorpicker/bootstrap-colorpicker.min.js" type="text/javascript"></script>
+                            <script src="../../static/css/js/plugins/timepicker/bootstrap-timepicker.min.js" type="text/javascript"></script>
+                            <script src="../../static/css/js/AdminLTE/app.js" type="text/javascript"></script>
+                            <script src="../../static/css/js/AdminLTE/demo.js" type="text/javascript"></script>
+                            <script type="text/javascript">
+                                $(function () {
+                                    //Datemask dd/mm/yyyy
+                                    $("#datemask").inputmask("dd/mm/yyyy", {"placeholder": "dd/mm/yyyy"});
+                                    //Datemask2 mm/dd/yyyy
+                                    $("#datemask2").inputmask("mm/dd/yyyy", {"placeholder": "mm/dd/yyyy"});
+                                    //Money Euro
+                                    $("[data-mask]").inputmask();
+
+                                    //Date range picker
+                                    $('#reservation').daterangepicker();
+                                    //Date range picker with time picker
+                                    $('#reservationtime').daterangepicker({timePicker: true, timePickerIncrement: 30, format: 'MM/DD/YYYY h:mm A'});
+                                    //Date range as a button
+                                    $('#daterange-btn').daterangepicker(
+                                            {
+                                                ranges: {
+                                                    'Today': [moment(), moment()],
+                                                    'Yesterday': [moment().subtract('days', 1), moment().subtract('days', 1)],
+                                                    'Last 7 Days': [moment().subtract('days', 6), moment()],
+                                                    'Last 30 Days': [moment().subtract('days', 29), moment()],
+                                                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                                                    'Last Month': [moment().subtract('month', 1).startOf('month'), moment().subtract('month', 1).endOf('month')]
+                                                },
+                                                startDate: moment().subtract('days', 29),
+                                                endDate: moment()
+                                            },
+                                    function (start, end) {
+                                        $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+                                    }
+                                    );
+
+                                    //iCheck for checkbox and radio inputs
+                                    $('input[type="checkbox"].minimal, input[type="radio"].minimal').iCheck({
+                                        checkboxClass: 'icheckbox_minimal',
+                                        radioClass: 'iradio_minimal'
+                                    });
+                                    //Red color scheme for iCheck
+                                    $('input[type="checkbox"].minimal-red, input[type="radio"].minimal-red').iCheck({
+                                        checkboxClass: 'icheckbox_minimal-red',
+                                        radioClass: 'iradio_minimal-red'
+                                    });
+                                    //Flat red color scheme for iCheck
+                                    $('input[type="checkbox"].flat-red, input[type="radio"].flat-red').iCheck({
+                                        checkboxClass: 'icheckbox_flat-red',
+                                        radioClass: 'iradio_flat-red'
+                                    });
+
+                                    //Colorpicker
+                                    $(".my-colorpicker1").colorpicker();
+                                    //color picker with addon
+                                    $(".my-colorpicker2").colorpicker();
+
+                                    //Timepicker
+                                    $(".timepicker").timepicker({
+                                        showInputs: false
+                                    });
+                                });
+                            </script>
+                            </body>
+                            </html>

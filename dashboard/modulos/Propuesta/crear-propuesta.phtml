@@ -23,8 +23,7 @@ if (login_check($mysqli) == true) {
                 
                 <section class="content-header">
                     <h1 class="text-center">
-                        <small>Crear </small>
-                        Propuesta Comercial
+                        Propuesta
                     </h1>
                     <?php
                     if (isset($_GET['me'])):
@@ -51,7 +50,7 @@ if (login_check($mysqli) == true) {
                                                 <div class="form-group">
                                                     <label>Razon Social</label>
                                                     <input type="hidden" value="<?php echo $_SESSION['user_id'] ?>" name="userId">
-                                                    <input type="text" class="form-control"  name="razonSocial" id='username'  placeholder="razon Social">
+                                                    <input type="text" class="form-control"  name="razonSocial" id='username'  placeholder="Razon Social">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
@@ -75,13 +74,13 @@ if (login_check($mysqli) == true) {
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label>RUC</label>
-                                                    <input type="text"  name="numeroRUC"   class="form-control" id="exampleInputEmail1" placeholder="numeroRUC" required>
+                                                    <input type="text"  name="numeroRUC"   class="form-control" id="exampleInputEmail1" placeholder="Numero de RUC" required>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label>Contacto</label>
-                                                    <input type="text" class="form-control" id="password" name="nombreContacto"  placeholder="nombre Contacto" required>
+                                                    <input type="text" class="form-control" id="password" name="nombreContacto"  placeholder="Nombre Contacto" required>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
@@ -90,7 +89,18 @@ if (login_check($mysqli) == true) {
                                                     <div class="input-group-addon">
                                                         <i class="fa fa-phone"></i>
                                                     </div>
-                                                    <input class="form-control" name="telefono" type="text" data-mask="" data-inputmask="'mask': ['999-999-999', '+099 99 99 9999[9]-9999']">
+                                                    <input class="form-control" name="Telefono" type="text" data-mask="" data-inputmask="'mask': ['999-999-999', '+099 99 99 9999[9]-9999']">
+                                                </div>
+                                            </div>
+                                            
+                                            
+                                            <div class="col-md-6">
+                                                <label>Telefono Fijo</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">
+                                                        <i class="fa fa-envelope"></i>
+                                                    </span>
+                                                    <input class="form-control" name="Correo" type="text" placeholder="Email" required>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
@@ -99,7 +109,7 @@ if (login_check($mysqli) == true) {
                                                     <span class="input-group-addon">
                                                         <i class="fa fa-envelope"></i>
                                                     </span>
-                                                    <input class="form-control" name="correo" type="text" placeholder="Email" required>
+                                                    <input class="form-control" name="Correo" type="text" placeholder="Email" required>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">&nbsp;</div><div class="col-md-6">&nbsp;</div>

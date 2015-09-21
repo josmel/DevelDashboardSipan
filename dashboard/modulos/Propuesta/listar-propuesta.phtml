@@ -70,7 +70,7 @@ if (login_check($mysqli) == true) {
                                                         break;
                                                     case 2:
                                                         ?>
-                                                        <td><span class="label label-primary">Approved</span></td>
+                                                        <td><span class="label label-primary">Aprobado</span></td>
                                                         <?php
                                                         break;
 
@@ -116,7 +116,7 @@ if (login_check($mysqli) == true) {
                                                                 var id = id;
                                                                 $.post('controllers/editar-estado.php', {id: id});
                                                                 $('.link-'+id).remove();
-                                                                $('.link-'+id).append('<div class="rosa-"+id><span class="label label-primary">Approved</span><div>');
+                                                                $('.rosa-'+id).append('<span class="label label-primary">Aprobado</span>');
                                                             }
                                                             $(function () {
                                                                 $("#example1").dataTable();

@@ -31,6 +31,12 @@ if (login_check($mysqli) == true) {
                         <h1 class="text-center">
                             Tus Propuestas Comerciales
                         </h1>
+                        <?php
+                    if (isset($_GET['me'])):
+                        $mensaje = mensajeGeneral($_GET['me'], 'Propuesta');
+                    endif;
+                    echo $mensaje;
+                    ?>
                     </section>
                     <!-- Main content -->
                     <section class="content invoice">
@@ -78,7 +84,6 @@ if (login_check($mysqli) == true) {
                                                         break;
                                                 }
                                                 ?>
-
                                                 <td><?php echo date_format($fechaCreacion, 'd/m/Y H:i:s') ?></td>
                                             </tr>
                                         <?php }

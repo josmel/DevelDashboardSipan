@@ -318,7 +318,7 @@ $posicion_coincidencia = strpos($_POST['urlNavegacion'], "&");
         $URL = $_POST['urlNavegacion'];
     }
   if ($estado == 1) {
-        header('Location: ' . $URL . '?me=1');
+        header('Location: /dashboard/modulos/Propuesta/listar-propuesta.phtml?me=1');
     } else {
         header('Location: ' . $URL . '?me=2');
     }
